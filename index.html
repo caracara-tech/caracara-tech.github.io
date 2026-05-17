@@ -228,6 +228,18 @@
       color: rgba(255,255,255,0.62); margin-top: 2.5rem; padding: 1rem 1.25rem;
       border: 1px solid rgba(255,255,255,0.16); border-radius: 4px;
     }
+    .form-error {
+      display: none;
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.62);
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      border: 1px solid rgba(255,100,100,0.3);
+      border-radius: 4px;
+      background: rgba(255,100,100,0.1);
+    }
 
     /* FOOTER */
     footer {
@@ -647,18 +659,22 @@
     We're preparing our first production run and working with partner institutions for pilot deployments. Leave your email to receive updates and early access pricing.
   </p>
 
-  <form class="waitlist-form" id="waitlistForm" onsubmit="handleSubmit(event)" novalidate>
+  <div data-fs-success class="form-success" id="formSuccess" role="alert">
+    ✓ &nbsp; You're on the list — we'll be in touch soon.
+  </div>
+  <div data-fs-error class="form-error"></div>
+
+  <form class="waitlist-form" id="waitlistForm" novalidate>
     <input
       type="email" class="waitlist-input" id="emailInput"
+      name="email" data-fs-field
       placeholder="your@institution.edu"
       required autocomplete="email" aria-label="Email address"
     />
-    <button type="submit" class="waitlist-btn">Join waitlist</button>
+    <span data-fs-error="email"></span>
+    <button type="submit" class="waitlist-btn" data-fs-submit-btn>Join waitlist</button>
   </form>
   <p class="waitlist-note">No spam. Unsubscribe any time. Early partners receive priority pricing.</p>
-  <div class="form-success" id="formSuccess" role="alert">
-    ✓ &nbsp; You're on the list — we'll be in touch soon.
-  </div>
 </section>
 
 <!-- FOOTER -->
@@ -666,22 +682,18 @@
   <a href="#" class="footer-logo">Caracara Tech</a>
   <p class="footer-meta">&copy; 2026 Caracara Tech. All rights reserved.</p>
   <nav class="footer-links" aria-label="Footer links">
-    <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
-    <a href="mailto:hello@caracaratech.com">Contact</a>
+    <a href="https://github.com/caracara-tech" target="_blank" rel="noopener">GitHub</a>
+    <a href="mailto:ppadilla1703@gmail.com">Contact</a>
   </nav>
 </footer>
 
 <script>
-  function handleSubmit(e) {
-    e.preventDefault();
-    const email = document.getElementById('emailInput').value.trim();
-    if (!email || !email.includes('@')) return;
-    document.getElementById('waitlistForm').style.display = 'none';
-    document.querySelector('.waitlist-note').style.display = 'none';
-    document.getElementById('formSuccess').style.display = 'block';
-    console.log('Waitlist signup:', email);
-  }
+  window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
+  formspree('initForm', { formElement: '#waitlistForm', formId: 'mpqnzavq' });
+</script>
+<script src="https://unpkg.com/@formspree/ajax@1" defer></script>
 
+<script>
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('.nav-links a');
   const observer = new IntersectionObserver(entries => {
