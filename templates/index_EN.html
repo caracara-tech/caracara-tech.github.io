@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caracara Tech — Instrumentation for Everyone</title>
+  <meta name="description" content="Caracara Tech develops accessible, sustainable scientific instrumentation to advance education and research worldwide." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:          #100e1a;
+      --ink-muted:    #4e4a60;
+      --ink-faint:    #8e8aa8;
+      --surface:      #f4f3f8;
+      --surface-alt:  #eceaf4;
+      --white:        #ffffff;
+      --accent:       #5c3fb5;
+      --accent-mid:   #7c5cce;
+      --accent-light: #e0d9f7;
+      --accent-dark:  #2e1d6e;
+      --rule:         #d4d0e4;
+      --orange:       #e07828;
+      --mono:  'DM Mono', monospace;
+      --serif: 'DM Serif Display', serif;
+      --sans:  'Instrument Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem; height: 64px;
+      background: rgba(244,243,248,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--rule);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+    .nav-wordmark { font-family: var(--serif); font-size: 1.15rem; letter-spacing: 0.01em; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.875rem; font-weight: 500; letter-spacing: 0.02em;
+      color: var(--ink-muted); text-decoration: none; text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-cta {
+      background: var(--accent) !important; color: var(--white) !important;
+      padding: 0.4rem 1.1rem !important; border-radius: 4px !important;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--accent-dark) !important; }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: grid; grid-template-columns: 1fr 1fr;
+      padding-top: 64px;
+    }
+    .hero-left {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 5rem 3rem 5rem 5rem;
+    }
+    .hero-eyebrow {
+      font-family: var(--mono); font-size: 0.75rem; font-weight: 300;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+      display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.75rem;
+    }
+    .hero-eyebrow::before { content: ''; display: block; width: 32px; height: 1px; background: var(--accent); }
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(2.8rem, 5vw, 4.2rem);
+      line-height: 1.08; letter-spacing: -0.01em;
+      color: var(--ink); margin-bottom: 1.5rem;
+    }
+    .hero-title em { font-style: italic; color: var(--accent); }
+    .hero-subtitle {
+      font-size: 1.1rem; color: var(--ink-muted);
+      max-width: 44ch; line-height: 1.7; margin-bottom: 2.5rem;
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--accent); color: var(--white);
+      font-family: var(--sans); font-size: 0.9rem; font-weight: 600;
+      padding: 0.8rem 1.75rem; border-radius: 4px;
+      text-decoration: none; letter-spacing: 0.01em;
+      border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: var(--accent-dark); transform: translateY(-1px); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: transparent; color: var(--ink);
+      font-family: var(--sans); font-size: 0.9rem; font-weight: 500;
+      padding: 0.8rem 1.75rem; border-radius: 4px;
+      text-decoration: none; letter-spacing: 0.01em;
+      border: 1px solid var(--rule);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--ink-muted); color: var(--accent); }
+
+    /* HERO RIGHT — photography */
+    .hero-right {
+      position: relative; overflow: hidden;
+      display: flex; align-items: stretch;
+    }
+    .hero-photo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      width: 100%; height: 100%;
+      gap: 3px;
+    }
+    .hero-photo-grid img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+    .hero-photo-grid img:hover { transform: scale(1.03); }
+    .hero-photo-main {
+      grid-column: 1 / 3;
+      grid-row: 1 / 2;
+      min-height: 340px;
+    }
+    .hero-badge {
+      position: absolute; top: 1.5rem; right: 1.5rem; z-index: 2;
+      font-family: var(--mono); font-size: 0.65rem; font-weight: 400;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(255,255,255,0.9);
+      background: rgba(46, 29, 110, 0.72);
+      backdrop-filter: blur(8px);
+      padding: 0.35rem 0.75rem; border-radius: 3px;
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    /* TICKER */
+    .ticker-wrap { background: var(--accent); overflow: hidden; white-space: nowrap; padding: 0.6rem 0; }
+    .ticker-track { display: inline-block; animation: ticker 34s linear infinite; }
+    .ticker-track span {
+      font-family: var(--mono); font-size: 0.72rem; font-weight: 300;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(255,255,255,0.72); padding: 0 2.5rem;
+    }
+    .ticker-track span::after { content: '·'; padding-left: 2.5rem; color: rgba(255,255,255,0.32); }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* SECTIONS */
+    section { padding: 6rem 5rem; }
+    .section-label {
+      font-family: var(--mono); font-size: 0.72rem; font-weight: 300;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+      display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;
+    }
+    .section-label::before { content: ''; display: block; width: 24px; height: 1px; background: var(--accent); }
+    .section-title {
+      font-family: var(--serif); font-size: clamp(2rem, 3.5vw, 2.8rem);
+      line-height: 1.12; color: var(--ink); margin-bottom: 1rem;
+    }
+    .section-body { font-size: 1.05rem; color: var(--ink-muted); max-width: 54ch; line-height: 1.75; }
+
+    /* PRODUCT */
+    #product { background: var(--white); }
+    .product-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4rem; align-items: start; margin-top: 3.5rem;
+    }
+    .product-visual {
+      position: relative; border-radius: 2px; overflow: hidden;
+      border: 1px solid var(--rule);
+      aspect-ratio: 4 / 5;
+      min-height: 500px;
+    }
+    .product-visual img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block;
+      transition: transform 0.7s ease;
+    }
+    .product-visual:hover img { transform: scale(1.04); }
+    .product-visual-caption {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(16,14,26,0.82));
+      padding: 2.5rem 1.5rem 1.25rem;
+      font-family: var(--mono); font-size: 0.7rem; font-weight: 300;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(255,255,255,0.72);
+    }
+    .product-visual-caption strong {
+      display: block; font-size: 0.95rem; font-family: var(--serif);
+      font-weight: 400; color: rgba(255,255,255,0.95);
+      letter-spacing: 0; text-transform: none; margin-bottom: 0.25rem;
+    }
+
+    .product-specs { display: flex; flex-direction: column; }
+    .spec-item {
+      display: flex; gap: 1.25rem; align-items: flex-start;
+      padding: 1.5rem 0; border-bottom: 1px solid var(--rule);
+    }
+    .spec-item:first-child { padding-top: 0; }
+    .spec-item:last-child { border-bottom: none; }
+    .spec-num {
+      font-family: var(--mono); font-size: 0.72rem; font-weight: 500;
+      color: var(--accent); letter-spacing: 0.1em; padding-top: 0.2rem; min-width: 2rem;
+    }
+    .spec-content h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .spec-content p { font-size: 0.9rem; color: var(--ink-muted); line-height: 1.6; }
+    .spec-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.6rem; }
+    .tag {
+      font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 0.2rem 0.55rem; border-radius: 3px;
+      background: var(--accent-light); color: var(--accent-dark);
+    }
+    .tag-orange { background: #fcebd8; color: #7a3c08; }
+
+    /* GALLERY STRIP between product and mission */
+    .photo-strip {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      height: 260px; gap: 3px;
+      overflow: hidden;
+    }
+    .photo-strip img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 0.6s ease, filter 0.4s;
+      filter: saturate(0.88);
+    }
+    .photo-strip img:hover { transform: scale(1.05); filter: saturate(1.1); }
+
+    /* MISSION */
+    #mission { background: var(--surface); }
+    .mission-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; margin-top: 3.5rem; }
+    .mission-card { background: var(--white); padding: 2.5rem 2rem; }
+    .mission-card::before { content: ''; display: block; width: 2rem; height: 2px; background: var(--accent); margin-bottom: 1.5rem; }
+    .mission-card h3 { font-family: var(--serif); font-size: 1.45rem; margin-bottom: 0.75rem; }
+    .mission-card p { font-size: 0.9rem; color: var(--ink-muted); line-height: 1.7; }
+    .mission-stat { font-family: var(--mono); font-size: 0.72rem; font-weight: 300; letter-spacing: 0.1em; color: var(--ink-faint); margin-top: 1.5rem; text-transform: uppercase; }
+
+    /* WAITLIST */
+    #waitlist { background: var(--accent-dark); color: var(--white); }
+    #waitlist .section-label { color: rgba(255,255,255,0.38); }
+    #waitlist .section-label::before { background: rgba(255,255,255,0.22); }
+    #waitlist .section-title { color: var(--white); }
+    #waitlist .section-body { color: rgba(255,255,255,0.52); max-width: 50ch; }
+    .waitlist-form { margin-top: 2.5rem; display: flex; max-width: 480px; }
+    .waitlist-input {
+      flex: 1; font-family: var(--sans); font-size: 0.95rem;
+      padding: 0.85rem 1.25rem;
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+      border-right: none; border-radius: 4px 0 0 4px;
+      color: var(--white); outline: none; transition: border-color 0.2s;
+    }
+    .waitlist-input::placeholder { color: rgba(255,255,255,0.28); }
+    .waitlist-input:focus { border-color: rgba(255,255,255,0.42); }
+    .waitlist-btn {
+      font-family: var(--sans); font-size: 0.9rem; font-weight: 600;
+      padding: 0.85rem 1.5rem; background: var(--white); color: var(--accent-dark);
+      border: none; border-radius: 0 4px 4px 0; cursor: pointer; white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .waitlist-btn:hover { background: var(--accent-light); }
+    .waitlist-note { margin-top: 1rem; font-family: var(--mono); font-size: 0.72rem; font-weight: 300; letter-spacing: 0.08em; color: rgba(255,255,255,0.28); }
+    .form-success {
+      display: none; font-family: var(--mono); font-size: 0.85rem; letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.62); margin-top: 2.5rem; padding: 1rem 1.25rem;
+      border: 1px solid rgba(255,255,255,0.16); border-radius: 4px;
+    }
+    .form-error {
+      display: none;
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.62);
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      border: 1px solid rgba(255,100,100,0.3);
+      border-radius: 4px;
+      background: rgba(255,100,100,0.1);
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--white); border-top: 1px solid var(--rule);
+      padding: 2.5rem 5rem; display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-logo { font-family: var(--serif); font-size: 1rem; color: var(--ink); text-decoration: none; }
+    .footer-meta { font-family: var(--mono); font-size: 0.7rem; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { font-size: 0.825rem; color: var(--ink-muted); text-decoration: none; }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* MOBILE */
+    @media (max-width: 900px) {
+      nav { padding: 0 1.5rem; }
+      .nav-links { display: none; }
+      #hero { grid-template-columns: 1fr; }
+      .hero-left { padding: 4rem 1.5rem 3rem; }
+      .hero-right { min-height: 320px; }
+      .hero-photo-grid { grid-template-columns: 1fr 1fr; }
+      .hero-photo-main { min-height: 200px; }
+      section { padding: 4rem 1.5rem; }
+      .product-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .mission-grid { grid-template-columns: 1fr; }
+      .photo-strip { grid-template-columns: repeat(2,1fr); height: 320px; }
+      #waitlist { padding: 4rem 1.5rem; }
+      .waitlist-form { flex-direction: column; max-width: 100%; }
+      .waitlist-input { border-right: 1px solid rgba(255,255,255,0.15); border-bottom: none; border-radius: 4px 4px 0 0; }
+      .waitlist-btn { border-radius: 0 0 4px 4px; }
+      footer { flex-direction: column; gap: 1rem; padding: 2rem 1.5rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo" aria-label="Caracara Tech home">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="14" cy="14" r="13" stroke="#5c3fb5" stroke-width="1.5"/>
+      <path d="M8 16 Q10 9 14 8 Q18 7 20 12 Q21 16 18 18 Q14 21 10 19" stroke="#5c3fb5" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <circle cx="19" cy="10" r="1.5" fill="#5c3fb5"/>
+    </svg>
+    <span class="nav-wordmark">Caracara Tech</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#product">Technology</a></li>
+    <li><a href="#mission">Mission</a></li>
+    <li><a href="#waitlist" class="nav-cta">Join waitlist</a></li>
+    <li style="margin-left: 1rem; border-left: 1px solid var(--rule); padding-left: 1rem;">
+    <a href="index.html" style="color: var(--accent);">EN</a> / 
+    <a href="index_ES.html">ES</a>
+  </li>
+  </ul>
+</nav>
+
+<section id="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Scientific Instrumentation</p>
+    <h1 class="hero-title">
+      Precision tools for<br/>
+      <em>every</em> laboratory<br/>
+      on earth.
+    </h1>
+    <p class="hero-subtitle">
+      Caracara Tech develops open-source scientific instruments — built with 3D printing, laser cutting, and accessible electronics — to democratize research and education worldwide.
+    </p>
+    <div class="hero-actions">
+      <a href="#waitlist" class="btn-primary">Join the waitlist &rarr;</a>
+      <a href="#product" class="btn-ghost">Explore the technology</a>
+    </div>
+  </div>
+
+  <div class="hero-right" aria-label="Scientific instrumentation gallery">
+    <span class="hero-badge">OpenFlexure Microscope · v3.0</span>
+    <div class="hero-photo-grid">
+      <img
+        class="hero-photo-main"
+        src="https://images.unsplash.com/photo-1576086213369-97a306d36557?w=1200&q=80&fit=crop"
+        alt="Researcher observing sample through microscope"
+        loading="eager"
+      />
+      <img
+        src="https://images.unsplash.com/photo-1559028012-481c04fa702d?w=600&q=80&fit=crop"
+        alt="3D printer fabricating components"
+        loading="lazy"
+      />
+      <img
+        src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80&fit=crop"
+        alt="Circuit board electronics"
+        loading="lazy"
+      />
+    </div>
+  </div>
+</section>
+
+<div class="ticker-wrap" aria-hidden="true">
+  <div class="ticker-track">
+    <span>3D printed hardware</span>
+    <span>Laser-cut structures</span>
+    <span>Open electronics</span>
+    <span>Arduino &amp; Raspberry Pi</span>
+    <span>Open-source design</span>
+    <span>Global south research</span>
+    <span>Accessible microscopy</span>
+    <span>Sustainable science</span>
+    <span>3D printed hardware</span>
+    <span>Laser-cut structures</span>
+    <span>Open electronics</span>
+    <span>Arduino &amp; Raspberry Pi</span>
+    <span>Open-source design</span>
+    <span>Global south research</span>
+    <span>Accessible microscopy</span>
+    <span>Sustainable science</span>
+  </div>
+</div>
+
+<section id="product">
+  <div class="section-label">Technology</div>
+  <h2 class="section-title">The OpenFlexure platform</h2>
+  <p class="section-body">
+    A fully open-source microscope combining 3D-printed flexure mechanics, laser-cut structural panels, and accessible open electronics — delivering sub-micron positioning at a fraction of the cost of commercial instruments.
+  </p>
+
+  <div class="product-grid">
+    <div class="product-visual" aria-label="OpenFlexure microscope assembled">
+      <img
+        src="assets/IMG_4087.jpg"
+        alt="Laboratory microscope with precision optics"
+        loading="lazy"
+      />
+      <div class="product-visual-caption">
+        <strong>OpenFlexure Platform</strong>
+        Sub-micrometer positioning · Local fabrication
+      </div>
+    </div>
+
+    <div class="product-specs">
+      <div class="spec-item">
+        <span class="spec-num">01</span>
+        <div class="spec-content">
+          <h3>3D printed flexure mechanics</h3>
+          <p>Every structural and kinematic component prints on a standard FDM printer. Flexure-based XYZ positioning achieves sub-100 nm step sizes without any precision machining.</p>
+          <div class="spec-tags">
+            <span class="tag tag-orange">FDM printing</span>
+            <span class="tag tag-orange">Sub-100 nm steps</span>
+          </div>
+        </div>
+      </div>
+      <div class="spec-item">
+        <span class="spec-num">02</span>
+        <div class="spec-content">
+          <h3>Laser-cut structural panels</h3>
+          <p>Rigid panels in acrylic or plywood provide dimensional accuracy and mechanical strength, combining with printed flexures for a precision-fit assembly that needs no glue or special tooling.</p>
+          <div class="spec-tags">
+            <span class="tag tag-orange">Acrylic / plywood</span>
+            <span class="tag tag-orange">±0.1 mm tolerance</span>
+          </div>
+        </div>
+      </div>
+      <div class="spec-item">
+        <span class="spec-num">03</span>
+        <div class="spec-content">
+          <h3>Open electronics — Arduino &amp; Raspberry Pi</h3>
+          <p>Widely available, community-supported boards at the core. Fully programmable with Python, no proprietary controllers, no vendor lock-in. Swap, upgrade, or extend at any time.</p>
+          <div class="spec-tags">
+            <span class="tag">Arduino</span>
+            <span class="tag">Raspberry Pi</span>
+            <span class="tag">Python API</span>
+          </div>
+        </div>
+      </div>
+      <div class="spec-item">
+        <span class="spec-num">04</span>
+        <div class="spec-content">
+          <h3>Field-repairable by design</h3>
+          <p>Every broken component can be reprinted or recut on-site. With a total parts cost under $150, repair is faster and cheaper than any service contract — anywhere in the world.</p>
+          <div class="spec-tags">
+            <span class="tag">OSHWA certified</span>
+            <span class="tag">CERN-OHL-S</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="photo-strip" aria-hidden="true">
+  <img
+    src="https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=600&q=75&fit=crop"
+    alt="Scientist working in laboratory"
+    loading="lazy"
+  />
+  <img
+    src="https://images.unsplash.com/photo-1579165466741-7f35e4755660?w=600&q=75&fit=crop"
+    alt="Research team doing scientific work"
+    loading="lazy"
+  />
+  <img
+    src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&q=75&fit=crop"
+    alt="Precision electronic components"
+    loading="lazy"
+  />
+  <img
+    src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600&q=75&fit=crop"
+    alt="Scientific data analysis"
+    loading="lazy"
+  />
+</div>
+
+<section id="mission">
+  <div class="section-label">Mission &amp; values</div>
+  <h2 class="section-title">Science without barriers.</h2>
+  <p class="section-body">
+    Cutting-edge research should not be the exclusive domain of well-funded institutions. We build tools that are accessible by design — from material cost to documentation to repairability.
+  </p>
+
+  <div class="mission-grid">
+    <div class="mission-card">
+      <h3>Accessible</h3>
+      <p>High-performance instruments designed for laboratories with limited budgets — from secondary schools to field research stations in remote or low-resource regions around the world.</p>
+      <p class="mission-stat">Target unit cost &lt; $150 USD</p>
+    </div>
+    <div class="mission-card">
+      <h3>Sustainable</h3>
+      <p>Manufacture locally, repair indefinitely. Digital fabrication eliminates complex supply chains — reducing cost, carbon footprint, and dependency on international logistics.</p>
+      <p class="mission-stat">100% locally fabricable parts</p>
+    </div>
+    <div class="mission-card">
+      <h3>Open</h3>
+      <p>Every design file, firmware source, and protocol is published openly. Science advances faster when knowledge is shared without restriction or license barriers.</p>
+      <p class="mission-stat">CERN-OHL-S licensed hardware</p>
+    </div>
+  </div>
+</section>
+
+<section id="waitlist">
+  <div class="section-label">Early access</div>
+  <h2 class="section-title">Be first in the lab.</h2>
+  <p class="section-body">
+    We're preparing our first production run and working with partner institutions for pilot deployments. Leave your email to receive updates and early access pricing.
+  </p>
+
+  <div data-fs-success class="form-success" id="formSuccess" role="alert">
+    ✓ &nbsp; You're on the list — we'll be in touch soon.
+  </div>
+  <div data-fs-error class="form-error"></div>
+
+  <form class="waitlist-form" id="waitlistForm" novalidate>
+    <input
+      type="email" class="waitlist-input" id="emailInput"
+      name="email" data-fs-field
+      placeholder="your@institution.edu"
+      required autocomplete="email" aria-label="Email address"
+    />
+    <span data-fs-error="email"></span>
+    <button type="submit" class="waitlist-btn" data-fs-submit-btn>Join waitlist</button>
+  </form>
+  <p class="waitlist-note">No spam. Unsubscribe any time. Early partners receive priority pricing.</p>
+</section>
+
+<footer>
+  <a href="#" class="footer-logo">Caracara Tech</a>
+  <p class="footer-meta">&copy; 2026 Caracara Tech. All rights reserved.</p>
+  <nav class="footer-links" aria-label="Footer links">
+    <a href="https://github.com/caracara-tech" target="_blank" rel="noopener">GitHub</a>
+    <a href="mailto:ppadilla1703@gmail.com">Contact</a>
+  </nav>
+</footer>
+
+<script>
+  window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
+  formspree('initForm', { formElement: '#waitlistForm', formId: 'mpqnzavq' });
+</script>
+<script src="https://unpkg.com/@formspree/ajax@1" defer></script>
+
+<script>
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => {
+          a.style.color = '';
+          if (a.getAttribute('href') === '#' + entry.target.id) a.style.color = 'var(--accent)';
+        });
+      }
+    });
+  }, { threshold: 0.4 });
+  sections.forEach(s => observer.observe(s));
+
+  const faders = document.querySelectorAll('.spec-item, .mission-card');
+  const fadeObs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        fadeObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  faders.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(14px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    fadeObs.observe(el);
+  });
+</script>
+</body>
+</html>
