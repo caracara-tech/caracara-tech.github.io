@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caracara Tech — Instrumentation for Everyone</title>
+  <meta name="description" content="Caracara Tech develops accessible, sustainable scientific instrumentation to advance education and research worldwide." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:          #100e1a;
+      --ink-muted:    #4e4a60;
+      --ink-faint:    #8e8aa8;
+      --surface:      #f4f3f8;
+      --surface-alt:  #eceaf4;
+      --white:        #ffffff;
+      --accent:       #5c3fb5;
+      --accent-mid:   #7c5cce;
+      --accent-light: #e0d9f7;
+      --accent-dark:  #2e1d6e;
+      --rule:         #d4d0e4;
+      --orange:       #e07828;
+      --mono:  'DM Mono', monospace;
+      --serif: 'DM Serif Display', serif;
+      --sans:  'Instrument Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem; height: 64px;
+      background: rgba(244,243,248,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--rule);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+    .nav-wordmark { font-family: var(--serif); font-size: 1.15rem; letter-spacing: 0.01em; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.875rem; font-weight: 500; letter-spacing: 0.02em;
+      color: var(--ink-muted); text-decoration: none; text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-cta {
+      background: var(--accent) !important; color: var(--white) !important;
+      padding: 0.4rem 1.1rem !important; border-radius: 4px !important;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--accent-dark) !important; }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: grid; grid-template-columns: 1fr 1fr;
+      padding-top: 64px;
+    }
+    .hero-left {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 5rem 3rem 5rem 5rem;
+    }
+    .hero-eyebrow {
+      font-family: var(--mono); font-size: 0.75rem; font-weight: 300;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+      display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.75rem;
+    }
+    .hero-eyebrow::before { content: ''; display: block; width: 32px; height: 1px; background: var(--accent); }
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(2.8rem, 5vw, 4.2rem);
+      line-height: 1.08; letter-spacing: -0.01em;
+      color: var(--ink); margin-bottom: 1.5rem;
+    }
+    .hero-title em { font-style: italic; color: var(--accent); }
+    .hero-subtitle {
+      font-size: 1.1rem; color: var(--ink-muted);
+      max-width: 44ch; line-height: 1.7; margin-bottom: 2.5rem;
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--accent); color: var(--white);
+      font-family: var(--sans); font-size: 0.9rem; font-weight: 600;
+      padding: 0.8rem 1.75rem; border-radius: 4px;
+      text-decoration: none; letter-spacing: 0.01em;
+      border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: var(--accent-dark); transform: translateY(-1px); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: transparent; color: var(--ink);
+      font-family: var(--sans); font-size: 0.9rem; font-weight: 500;
+      padding: 0.8rem 1.75rem; border-radius: 4px;
+      text-decoration: none; letter-spacing: 0.01em;
+      border: 1px solid var(--rule);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--ink-muted); color: var(--accent); }
+
+    .hero-right {
+      background: var(--accent-dark);
+      display: flex; align-items: center; justify-content: center;
+      padding: 3rem 2.5rem; position: relative; overflow: hidden;
+    }
+    .hero-right::before {
+      content: ''; position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .hero-badge {
+      position: absolute; top: 2rem; right: 2rem;
+      font-family: var(--mono); font-size: 0.65rem; font-weight: 300;
+      letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.28);
+    }
+    .hero-diagram { width: 100%; max-width: 460px; position: relative; z-index: 1; }
+
+    /* TICKER */
+    .ticker-wrap { background: var(--accent); overflow: hidden; white-space: nowrap; padding: 0.6rem 0; }
+    .ticker-track { display: inline-block; animation: ticker 34s linear infinite; }
+    .ticker-track span {
+      font-family: var(--mono); font-size: 0.72rem; font-weight: 300;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(255,255,255,0.72); padding: 0 2.5rem;
+    }
+    .ticker-track span::after { content: '·'; padding-left: 2.5rem; color: rgba(255,255,255,0.32); }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* SECTIONS */
+    section { padding: 6rem 5rem; }
+    .section-label {
+      font-family: var(--mono); font-size: 0.72rem; font-weight: 300;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+      display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;
+    }
+    .section-label::before { content: ''; display: block; width: 24px; height: 1px; background: var(--accent); }
+    .section-title {
+      font-family: var(--serif); font-size: clamp(2rem, 3.5vw, 2.8rem);
+      line-height: 1.12; color: var(--ink); margin-bottom: 1rem;
+    }
+    .section-body { font-size: 1.05rem; color: var(--ink-muted); max-width: 54ch; line-height: 1.75; }
+
+    /* PRODUCT */
+    #product { background: var(--white); }
+    .product-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4rem; align-items: start; margin-top: 3.5rem;
+    }
+    .product-visual {
+      background: var(--surface); border: 1px solid var(--rule); border-radius: 2px;
+      padding: 2rem 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .product-visual svg { width: 100%; }
+    .product-specs { display: flex; flex-direction: column; }
+    .spec-item {
+      display: flex; gap: 1.25rem; align-items: flex-start;
+      padding: 1.5rem 0; border-bottom: 1px solid var(--rule);
+    }
+    .spec-item:first-child { padding-top: 0; }
+    .spec-item:last-child { border-bottom: none; }
+    .spec-num {
+      font-family: var(--mono); font-size: 0.72rem; font-weight: 500;
+      color: var(--accent); letter-spacing: 0.1em; padding-top: 0.2rem; min-width: 2rem;
+    }
+    .spec-content h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .spec-content p { font-size: 0.9rem; color: var(--ink-muted); line-height: 1.6; }
+    .spec-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.6rem; }
+    .tag {
+      font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 0.2rem 0.55rem; border-radius: 3px;
+      background: var(--accent-light); color: var(--accent-dark);
+    }
+    .tag-orange { background: #fcebd8; color: #7a3c08; }
+
+    /* MISSION */
+    #mission { background: var(--surface); }
+    .mission-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; margin-top: 3.5rem; }
+    .mission-card { background: var(--white); padding: 2.5rem 2rem; }
+    .mission-card::before { content: ''; display: block; width: 2rem; height: 2px; background: var(--accent); margin-bottom: 1.5rem; }
+    .mission-card h3 { font-family: var(--serif); font-size: 1.45rem; margin-bottom: 0.75rem; }
+    .mission-card p { font-size: 0.9rem; color: var(--ink-muted); line-height: 1.7; }
+    .mission-stat { font-family: var(--mono); font-size: 0.72rem; font-weight: 300; letter-spacing: 0.1em; color: var(--ink-faint); margin-top: 1.5rem; text-transform: uppercase; }
+
+    /* WAITLIST */
+    #waitlist { background: var(--accent-dark); color: var(--white); }
+    #waitlist .section-label { color: rgba(255,255,255,0.38); }
+    #waitlist .section-label::before { background: rgba(255,255,255,0.22); }
+    #waitlist .section-title { color: var(--white); }
+    #waitlist .section-body { color: rgba(255,255,255,0.52); max-width: 50ch; }
+    .waitlist-form { margin-top: 2.5rem; display: flex; max-width: 480px; }
+    .waitlist-input {
+      flex: 1; font-family: var(--sans); font-size: 0.95rem;
+      padding: 0.85rem 1.25rem;
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+      border-right: none; border-radius: 4px 0 0 4px;
+      color: var(--white); outline: none; transition: border-color 0.2s;
+    }
+    .waitlist-input::placeholder { color: rgba(255,255,255,0.28); }
+    .waitlist-input:focus { border-color: rgba(255,255,255,0.42); }
+    .waitlist-btn {
+      font-family: var(--sans); font-size: 0.9rem; font-weight: 600;
+      padding: 0.85rem 1.5rem; background: var(--white); color: var(--accent-dark);
+      border: none; border-radius: 0 4px 4px 0; cursor: pointer; white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .waitlist-btn:hover { background: var(--accent-light); }
+    .waitlist-note { margin-top: 1rem; font-family: var(--mono); font-size: 0.72rem; font-weight: 300; letter-spacing: 0.08em; color: rgba(255,255,255,0.28); }
+    .form-success {
+      display: none; font-family: var(--mono); font-size: 0.85rem; letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.62); margin-top: 2.5rem; padding: 1rem 1.25rem;
+      border: 1px solid rgba(255,255,255,0.16); border-radius: 4px;
+    }
+    .form-error {
+      display: none;
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.62);
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      border: 1px solid rgba(255,100,100,0.3);
+      border-radius: 4px;
+      background: rgba(255,100,100,0.1);
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--white); border-top: 1px solid var(--rule);
+      padding: 2.5rem 5rem; display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-logo { font-family: var(--serif); font-size: 1rem; color: var(--ink); text-decoration: none; }
+    .footer-meta { font-family: var(--mono); font-size: 0.7rem; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { font-size: 0.825rem; color: var(--ink-muted); text-decoration: none; }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* MOBILE */
+    @media (max-width: 900px) {
+      nav { padding: 0 1.5rem; }
+      .nav-links { display: none; }
+      #hero { grid-template-columns: 1fr; }
+      .hero-left { padding: 4rem 1.5rem 3rem; }
+      .hero-right { min-height: 320px; padding: 2rem; }
+      section { padding: 4rem 1.5rem; }
+      .product-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .mission-grid { grid-template-columns: 1fr; }
+      #waitlist { padding: 4rem 1.5rem; }
+      .waitlist-form { flex-direction: column; max-width: 100%; }
+      .waitlist-input { border-right: 1px solid rgba(255,255,255,0.15); border-bottom: none; border-radius: 4px 4px 0 0; }
+      .waitlist-btn { border-radius: 0 0 4px 4px; }
+      footer { flex-direction: column; gap: 1rem; padding: 2rem 1.5rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo" aria-label="Caracara Tech home">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="14" cy="14" r="13" stroke="#5c3fb5" stroke-width="1.5"/>
+      <path d="M8 16 Q10 9 14 8 Q18 7 20 12 Q21 16 18 18 Q14 21 10 19" stroke="#5c3fb5" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <circle cx="19" cy="10" r="1.5" fill="#5c3fb5"/>
+    </svg>
+    <span class="nav-wordmark">Caracara Tech</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#product">Technology</a></li>
+    <li><a href="#mission">Mission</a></li>
+    <li><a href="#waitlist" class="nav-cta">Join waitlist</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Scientific Instrumentation</p>
+    <h1 class="hero-title">
+      Precision tools for<br/>
+      <em>every</em> laboratory<br/>
+      on earth.
+    </h1>
+    <p class="hero-subtitle">
+      Caracara Tech develops open-source scientific instruments — built with 3D printing, laser cutting, and accessible electronics — to democratize research and education worldwide.
+    </p>
+    <div class="hero-actions">
+      <a href="#waitlist" class="btn-primary">Join the waitlist &rarr;</a>
+      <a href="#product" class="btn-ghost">Explore the technology</a>
+    </div>
+  </div>
+
+  <div class="hero-right" aria-hidden="true">
+    <span class="hero-badge">OpenFlexure Microscope · v3.0</span>
+
+    <!--
+      Redrawn from reference photo.
+      Key parts: wide electronics housing base, main body, x-y stage plate (mid),
+      objective column (front centre), camera/optics module (front lower),
+      condenser mount (top — orange 3D-print), z-actuator arm (right — orange),
+      optional motor mount + actuator gear (right lower — orange).
+    -->
+    <svg class="hero-diagram" viewBox="0 0 460 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr-h" markerWidth="5" markerHeight="5" refX="4.5" refY="2.5" orient="auto">
+          <polygon points="0,0 5,2.5 0,5" fill="rgba(224,140,60,0.75)"/>
+        </marker>
+      </defs>
+
+      <!-- ══ ELECTRONICS HOUSING — wide base ══ -->
+      <rect x="72" y="318" width="236" height="54" rx="4"
+            fill="rgba(22,14,52,0.95)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+      <!-- vent slots -->
+      <rect x="92"  y="330" width="26" height="4" rx="1" fill="rgba(255,255,255,0.06)"/>
+      <rect x="128" y="330" width="26" height="4" rx="1" fill="rgba(255,255,255,0.06)"/>
+      <rect x="164" y="330" width="26" height="4" rx="1" fill="rgba(255,255,255,0.06)"/>
+      <rect x="200" y="330" width="26" height="4" rx="1" fill="rgba(255,255,255,0.06)"/>
+      <rect x="236" y="330" width="26" height="4" rx="1" fill="rgba(255,255,255,0.06)"/>
+      <rect x="92"  y="342" width="26" height="4" rx="1" fill="rgba(255,255,255,0.05)"/>
+      <rect x="128" y="342" width="26" height="4" rx="1" fill="rgba(255,255,255,0.05)"/>
+      <rect x="164" y="342" width="26" height="4" rx="1" fill="rgba(255,255,255,0.05)"/>
+      <rect x="200" y="342" width="26" height="4" rx="1" fill="rgba(255,255,255,0.05)"/>
+      <rect x="236" y="342" width="26" height="4" rx="1" fill="rgba(255,255,255,0.05)"/>
+
+      <!-- ══ MAIN BODY ══ -->
+      <rect x="104" y="170" width="172" height="150" rx="4"
+            fill="rgba(18,11,44,0.96)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+
+      <!-- ══ X-Y STAGE PLATE (mid, highlighted purple) ══ -->
+      <rect x="112" y="218" width="156" height="20" rx="2"
+            fill="rgba(92,63,181,0.28)" stroke="rgba(156,120,230,0.55)" stroke-width="1"/>
+      <!-- stage grid -->
+      <line x1="148" y1="218" x2="148" y2="238" stroke="rgba(156,120,230,0.2)" stroke-width="0.5"/>
+      <line x1="184" y1="218" x2="184" y2="238" stroke="rgba(156,120,230,0.2)" stroke-width="0.5"/>
+      <line x1="220" y1="218" x2="220" y2="238" stroke="rgba(156,120,230,0.2)" stroke-width="0.5"/>
+      <line x1="256" y1="218" x2="256" y2="238" stroke="rgba(156,120,230,0.2)" stroke-width="0.5"/>
+      <line x1="112" y1="228" x2="268" y2="228" stroke="rgba(156,120,230,0.18)" stroke-width="0.5"/>
+
+      <!-- ══ CAMERA & OPTICS MODULE (front lower) ══ -->
+      <rect x="140" y="274" width="100" height="46" rx="3"
+            fill="rgba(10,6,30,1)" stroke="rgba(92,63,181,0.55)" stroke-width="1"/>
+      <!-- lens barrel -->
+      <ellipse cx="190" cy="297" rx="24" ry="13"
+               fill="rgba(46,29,110,0.5)" stroke="rgba(124,92,206,0.65)" stroke-width="1"/>
+      <ellipse cx="190" cy="297" rx="14" ry="8"
+               fill="rgba(10,6,30,1)" stroke="rgba(92,63,181,0.4)" stroke-width="0.5"/>
+      <ellipse cx="190" cy="297" rx="6.5" ry="4" fill="rgba(92,63,181,0.5)"/>
+
+      <!-- ══ OBJECTIVE LENS — column ══ -->
+      <rect x="179" y="132" width="22" height="40" rx="2"
+            fill="rgba(18,11,44,0.9)" stroke="rgba(255,255,255,0.1)" stroke-width="0.75"/>
+      <!-- objective band (purple) -->
+      <rect x="176" y="154" width="28" height="9" rx="1"
+            fill="rgba(92,63,181,0.35)" stroke="rgba(124,92,206,0.5)" stroke-width="0.75"/>
+
+      <!-- ══ CONDENSER MOUNT (top — orange 3D-printed part) ══ -->
+      <!-- main orange body — broad flat top, tapered to stem -->
+      <path d="M158 100 Q155 76 165 64 L215 64 Q225 76 222 100 Z"
+            fill="rgba(210,108,18,0.88)" stroke="rgba(230,140,50,0.9)" stroke-width="1"/>
+      <!-- panel detail -->
+      <rect x="170" y="68" width="40" height="28" rx="2"
+            fill="rgba(180,80,10,0.55)" stroke="rgba(230,140,50,0.3)" stroke-width="0.5"/>
+      <!-- condenser bottom ring -->
+      <ellipse cx="190" cy="100" rx="18" ry="6"
+               fill="rgba(200,100,14,0.55)" stroke="rgba(230,140,50,0.5)" stroke-width="0.75"/>
+      <!-- stem from condenser to body -->
+      <rect x="184" y="100" width="12" height="70" rx="1"
+            fill="rgba(18,11,44,0.9)" stroke="rgba(255,255,255,0.08)" stroke-width="0.75"/>
+
+      <!-- ══ Z-ACTUATOR — right side, orange ══ -->
+      <rect x="284" y="148" width="30" height="82" rx="3"
+            fill="rgba(210,108,18,0.86)" stroke="rgba(230,140,50,0.9)" stroke-width="1"/>
+      <!-- actuator top knob -->
+      <ellipse cx="299" cy="148" rx="14" ry="8"
+               fill="rgba(220,120,28,0.8)" stroke="rgba(255,190,90,0.5)" stroke-width="0.75"/>
+      <!-- ridges -->
+      <line x1="284" y1="168" x2="314" y2="168" stroke="rgba(255,200,100,0.18)" stroke-width="0.5"/>
+      <line x1="284" y1="182" x2="314" y2="182" stroke="rgba(255,200,100,0.18)" stroke-width="0.5"/>
+      <line x1="284" y1="196" x2="314" y2="196" stroke="rgba(255,200,100,0.18)" stroke-width="0.5"/>
+      <line x1="284" y1="210" x2="314" y2="210" stroke="rgba(255,200,100,0.18)" stroke-width="0.5"/>
+      <!-- connector bridge to body -->
+      <rect x="276" y="175" width="8" height="26" rx="1"
+            fill="rgba(18,11,44,0.9)" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+
+      <!-- ══ OPTIONAL MOTOR MOUNT (right lower — orange) ══ -->
+      <rect x="282" y="244" width="28" height="22" rx="3"
+            fill="rgba(200,100,14,0.76)" stroke="rgba(230,140,50,0.8)" stroke-width="0.75"/>
+      <!-- bolt detail -->
+      <circle cx="289" cy="255" r="3" fill="rgba(18,11,44,0.7)" stroke="rgba(230,140,50,0.3)" stroke-width="0.5"/>
+      <circle cx="303" cy="255" r="3" fill="rgba(18,11,44,0.7)" stroke="rgba(230,140,50,0.3)" stroke-width="0.5"/>
+
+      <!-- ══ ACTUATOR GEAR (lower right — orange) ══ -->
+      <ellipse cx="296" cy="292" rx="17" ry="11"
+               fill="rgba(200,100,14,0.72)" stroke="rgba(230,140,50,0.8)" stroke-width="0.75"/>
+      <!-- gear inner -->
+      <ellipse cx="296" cy="292" rx="9" ry="6"
+               fill="rgba(10,6,30,0.85)" stroke="rgba(230,140,50,0.3)" stroke-width="0.5"/>
+      <!-- gear teeth suggestion -->
+      <rect x="292" y="280" width="8" height="3" rx="1" fill="rgba(210,108,18,0.7)"/>
+      <rect x="292" y="300" width="8" height="3" rx="1" fill="rgba(210,108,18,0.7)"/>
+      <rect x="279" y="288" width="3" height="8" rx="1" fill="rgba(210,108,18,0.7)"/>
+      <rect x="310" y="288" width="3" height="8" rx="1" fill="rgba(210,108,18,0.7)"/>
+
+      <!-- ══ LIGHT PATH ══ -->
+      <line x1="190" y1="274" x2="190" y2="240"
+            stroke="rgba(200,180,255,0.14)" stroke-width="1" stroke-dasharray="3 3"/>
+      <line x1="190" y1="170" x2="190" y2="132"
+            stroke="rgba(200,180,255,0.1)" stroke-width="0.75" stroke-dasharray="3 3"/>
+
+      <!-- ══ LEFT CALLOUT LINES ══ -->
+      <!-- Condenser mount -->
+      <line x1="157" y1="78" x2="55" y2="56" stroke="rgba(224,140,60,0.6)" stroke-width="0.75" marker-end="url(#arr-h)"/>
+      <text x="8"  y="50" fill="rgba(255,255,255,0.55)" font-size="9.5" font-family="DM Mono,monospace" font-weight="300" letter-spacing="0.08em">Condenser</text>
+      <text x="8"  y="63" fill="rgba(255,255,255,0.55)" font-size="9.5" font-family="DM Mono,monospace" font-weight="300" letter-spacing="0.08em">mount</text>
+
+      <!-- X-Y stage -->
+      <line x1="112" y1="228" x2="55" y2="200" stroke="rgba(224,140,60,0.6)" stroke-width="0.75" marker-end="url(#arr-h)"/>
+      <text x="8"  y="198" fill="rgba(255,255,255,0.55)" font-size="9.5" font-family="DM Mono,monospace" font-weight="300" letter-spacing="0.08em">X-Y stage</text>
+
+      <!-- Objective lens -->
+      <line x1="179" y1="162" x2="55" y2="222" stroke="rgba(224,140,60,0.6)" stroke-width="0.75" marker-end="url(#arr-h)"/>
+      <text x="8"  y="218" fill="rgba(255,255,255,0.55)" font-size="9.5" font-family="DM Mono,monospace" font-weight="300" letter-spacing="0.08em">Objective</text>
+      <text x="8"  y="231" fill="rgba(255,255,255,0.55)" font-size="9.5" font-family="DM Mono,monospace" font-weight="300" letter-spacing="0.08em">lens</text>
+
+      <!-- Camera & optics -->
+      <line x1="140" y1="292" x2="55" y2="270" stroke="rgba(224,140,60,0.6)" stroke-width="0.75" marker-end="url(#arr-h)"/>
+      <text x="8"  y="262" fill="rgba(255,255,255,0.55)" font-size="9.5" font-family="DM Mono,monospace" font-weight="300" letter-spacing="0.08em">Camera &amp;</text>
+      <text x="8"  y="275" fill="rgba(255,255,255,0.55)" font-size="9.5" font-family="DM Mono,monospace" font-weight="300" letter-spacing="0.08em">optics module</text>
+
+      <!-- Electronics housing -->
+      <line x1="104" y1="342" x2="55" y2="348" stroke="rgba(224,140,60,0.6)" stroke-width="0.75" marker-end="url(#arr-h)"/>
+      <text x="8"  y="342" fill="rgba(255,255,255,0.55)" font-size="9.5" font-family="DM Mono,monospace" font-weight="300" letter-spacing="0.08em">Electronics</text>
+      <text x="8"  y="355" fill="rgba(255,255,255,0.55)" font-size="9.5" font-family="DM Mono,monospace" font-weight="300" letter-spacing="0.08em">housing</text>
+
+      <!-- ══ RIGHT CALLOUT LINES ══ -->
+      <!-- Z-actuator -->
+      <line x1="314" y1="162" x2="370" y2="138" stroke="rgba(224,140,60,0.6)" stroke-width="0.75" marker-end="url(#arr-h)"/>
+      <text x="374" y="135" fill="rgba(255,255,255,0.55)" font-size="9.5" font-family="DM Mono,monospace" font-weight="300" letter-spacing="0.08em">Z-actuator</text>
+
+      <!-- Optional motor mount -->
+      <line x1="310" y1="255" x2="370" y2="224" stroke="rgba(224,140,60,0.6)" stroke-width="0.75" marker-end="url(#arr-h)"/>
+      <text x="374" y="218" fill="rgba(255,255,255,0.55)" font-size="9.5" font-family="DM Mono,monospace" font-weight="300" letter-spacing="0.08em">Optional</text>
+      <text x="374" y="231" fill="rgba(255,255,255,0.55)" font-size="9.5" font-family="DM Mono,monospace" font-weight="300" letter-spacing="0.08em">motor mount</text>
+
+      <!-- Actuator gear -->
+      <line x1="313" y1="292" x2="370" y2="278" stroke="rgba(224,140,60,0.6)" stroke-width="0.75" marker-end="url(#arr-h)"/>
+      <text x="374" y="272" fill="rgba(255,255,255,0.55)" font-size="9.5" font-family="DM Mono,monospace" font-weight="300" letter-spacing="0.08em">Actuator</text>
+      <text x="374" y="285" fill="rgba(255,255,255,0.55)" font-size="9.5" font-family="DM Mono,monospace" font-weight="300" letter-spacing="0.08em">gear</text>
+    </svg>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap" aria-hidden="true">
+  <div class="ticker-track">
+    <span>3D printed hardware</span>
+    <span>Laser-cut structures</span>
+    <span>Open electronics</span>
+    <span>Arduino &amp; Raspberry Pi</span>
+    <span>Open-source design</span>
+    <span>Global south research</span>
+    <span>Accessible microscopy</span>
+    <span>Sustainable science</span>
+    <span>3D printed hardware</span>
+    <span>Laser-cut structures</span>
+    <span>Open electronics</span>
+    <span>Arduino &amp; Raspberry Pi</span>
+    <span>Open-source design</span>
+    <span>Global south research</span>
+    <span>Accessible microscopy</span>
+    <span>Sustainable science</span>
+  </div>
+</div>
+
+<!-- PRODUCT / TECHNOLOGY -->
+<section id="product">
+  <div class="section-label">Technology</div>
+  <h2 class="section-title">The OpenFlexure platform</h2>
+  <p class="section-body">
+    A fully open-source microscope combining 3D-printed flexure mechanics, laser-cut structural panels, and accessible open electronics — delivering sub-micron positioning at a fraction of the cost of commercial instruments.
+  </p>
+
+  <div class="product-grid">
+    <div class="product-visual" aria-label="OpenFlexure microscope component diagram">
+      <svg viewBox="0 0 300 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Electronics base -->
+        <rect x="30" y="292" width="240" height="40" rx="3" fill="#eceaf4" stroke="#d4d0e4" stroke-width="1"/>
+        <rect x="50"  y="304" width="24" height="4" rx="1" fill="#d4d0e4"/>
+        <rect x="84"  y="304" width="24" height="4" rx="1" fill="#d4d0e4"/>
+        <rect x="118" y="304" width="24" height="4" rx="1" fill="#d4d0e4"/>
+        <rect x="152" y="304" width="24" height="4" rx="1" fill="#d4d0e4"/>
+        <rect x="186" y="304" width="24" height="4" rx="1" fill="#d4d0e4"/>
+        <rect x="50"  y="314" width="24" height="4" rx="1" fill="#d4d0e4" opacity="0.6"/>
+        <rect x="84"  y="314" width="24" height="4" rx="1" fill="#d4d0e4" opacity="0.6"/>
+        <rect x="118" y="314" width="24" height="4" rx="1" fill="#d4d0e4" opacity="0.6"/>
+        <rect x="152" y="314" width="24" height="4" rx="1" fill="#d4d0e4" opacity="0.6"/>
+        <rect x="186" y="314" width="24" height="4" rx="1" fill="#d4d0e4" opacity="0.6"/>
+        <text x="150" y="328" fill="#8e8aa8" font-size="7.5" font-family="DM Mono,monospace" text-anchor="middle" letter-spacing="0.1em">ELECTRONICS HOUSING</text>
+
+        <!-- Main body -->
+        <rect x="68" y="162" width="164" height="132" rx="3" fill="#f4f3f8" stroke="#d4d0e4" stroke-width="1"/>
+
+        <!-- X-Y stage -->
+        <rect x="78" y="208" width="144" height="18" rx="2" fill="#e0d9f7" stroke="#9b85e0" stroke-width="1"/>
+        <line x1="108" y1="208" x2="108" y2="226" stroke="#c5b8f0" stroke-width="0.5"/>
+        <line x1="138" y1="208" x2="138" y2="226" stroke="#c5b8f0" stroke-width="0.5"/>
+        <line x1="168" y1="208" x2="168" y2="226" stroke="#c5b8f0" stroke-width="0.5"/>
+        <line x1="198" y1="208" x2="198" y2="226" stroke="#c5b8f0" stroke-width="0.5"/>
+        <text x="150" y="221" fill="#5c3fb5" font-size="7" font-family="DM Mono,monospace" text-anchor="middle" letter-spacing="0.08em">X-Y STAGE</text>
+
+        <!-- Camera & optics -->
+        <rect x="100" y="258" width="100" height="36" rx="2" fill="#100e1a" stroke="#5c3fb5" stroke-width="1"/>
+        <ellipse cx="150" cy="276" rx="21" ry="11" fill="#2e1d6e" stroke="#7c5cce" stroke-width="1"/>
+        <ellipse cx="150" cy="276" rx="12" ry="6.5" fill="#100e1a" stroke="#7c5cce" stroke-width="0.5"/>
+        <ellipse cx="150" cy="276" rx="5.5" ry="3.5" fill="#5c3fb5" opacity="0.6"/>
+        <text x="150" y="289" fill="#8e8aa8" font-size="6.5" font-family="DM Mono,monospace" text-anchor="middle" letter-spacing="0.08em">CAMERA MODULE</text>
+
+        <!-- Objective -->
+        <rect x="141" y="126" width="18" height="38" rx="2" fill="#eceaf4" stroke="#d4d0e4" stroke-width="1"/>
+        <rect x="138" y="148" width="24" height="8" rx="1" fill="#e0d9f7" stroke="#9b85e0" stroke-width="1"/>
+        <text x="150" y="122" fill="#4e4a60" font-size="7.5" font-family="DM Mono,monospace" text-anchor="middle" letter-spacing="0.08em">OBJECTIVE</text>
+
+        <!-- Condenser mount — orange -->
+        <path d="M128 86 Q126 66 135 56 L165 56 Q174 66 172 86 Z" fill="#e07828" opacity="0.85"/>
+        <rect x="136" y="60" width="28" height="22" rx="2" fill="#c06018" opacity="0.55"/>
+        <ellipse cx="150" cy="86" rx="14" ry="5" fill="#e07828" opacity="0.6"/>
+        <rect x="144" y="86" width="12" height="42" rx="1" fill="#eceaf4" stroke="#d4d0e4" stroke-width="0.75"/>
+        <text x="150" y="51" fill="#e07828" font-size="7.5" font-family="DM Mono,monospace" text-anchor="middle" letter-spacing="0.08em">CONDENSER MOUNT</text>
+
+        <!-- Z-actuator — orange, right side -->
+        <rect x="238" y="142" width="26" height="72" rx="3" fill="#e07828" opacity="0.86"/>
+        <ellipse cx="251" cy="142" rx="13" ry="7" fill="#e07828" opacity="0.9"/>
+        <line x1="238" y1="162" x2="264" y2="162" stroke="rgba(255,200,100,0.2)" stroke-width="0.5"/>
+        <line x1="238" y1="176" x2="264" y2="176" stroke="rgba(255,200,100,0.2)" stroke-width="0.5"/>
+        <line x1="238" y1="190" x2="264" y2="190" stroke="rgba(255,200,100,0.2)" stroke-width="0.5"/>
+        <rect x="232" y="168" width="6" height="22" rx="1" fill="#eceaf4" stroke="#d4d0e4" stroke-width="0.5"/>
+        <text x="275" y="182" fill="#e07828" font-size="7.5" font-family="DM Mono,monospace" letter-spacing="0.06em">Z-ACT.</text>
+
+        <!-- Motor mount -->
+        <rect x="236" y="228" width="24" height="18" rx="2" fill="#e07828" opacity="0.75"/>
+        <!-- Actuator gear -->
+        <ellipse cx="247" cy="264" rx="15" ry="9" fill="#e07828" opacity="0.72"/>
+        <ellipse cx="247" cy="264" rx="8"  ry="5"  fill="#100e1a" opacity="0.5"/>
+        <rect x="243" y="254" width="8" height="2.5" rx="1" fill="#e07828" opacity="0.7"/>
+        <rect x="243" y="271" width="8" height="2.5" rx="1" fill="#e07828" opacity="0.7"/>
+        <rect x="232" y="260" width="2.5" height="8" rx="1" fill="#e07828" opacity="0.7"/>
+        <rect x="260" y="260" width="2.5" height="8" rx="1" fill="#e07828" opacity="0.7"/>
+
+        <!-- Light path -->
+        <line x1="150" y1="258" x2="150" y2="228" stroke="#9b85e0" stroke-width="0.75" stroke-dasharray="3 3" opacity="0.4"/>
+        <line x1="150" y1="162" x2="150" y2="126" stroke="#9b85e0" stroke-width="0.75" stroke-dasharray="3 3" opacity="0.3"/>
+
+        <!-- Raspberry Pi / Arduino chips inside housing -->
+        <rect x="106" y="298" width="16" height="10" rx="1" fill="#5c3fb5" opacity="0.25"/>
+        <rect x="128" y="298" width="16" height="10" rx="1" fill="#5c3fb5" opacity="0.18"/>
+        <rect x="150" y="298" width="16" height="10" rx="1" fill="#5c3fb5" opacity="0.14"/>
+      </svg>
+    </div>
+
+    <div class="product-specs">
+      <div class="spec-item">
+        <span class="spec-num">01</span>
+        <div class="spec-content">
+          <h3>3D printed flexure mechanics</h3>
+          <p>Every structural and kinematic component prints on a standard FDM printer. Flexure-based XYZ positioning achieves sub-100 nm step sizes without any precision machining.</p>
+          <div class="spec-tags">
+            <span class="tag tag-orange">FDM printing</span>
+            <span class="tag tag-orange">Sub-100 nm steps</span>
+          </div>
+        </div>
+      </div>
+      <div class="spec-item">
+        <span class="spec-num">02</span>
+        <div class="spec-content">
+          <h3>Laser-cut structural panels</h3>
+          <p>Rigid panels in acrylic or plywood provide dimensional accuracy and mechanical strength, combining with printed flexures for a precision-fit assembly that needs no glue or special tooling.</p>
+          <div class="spec-tags">
+            <span class="tag tag-orange">Acrylic / plywood</span>
+            <span class="tag tag-orange">±0.1 mm tolerance</span>
+          </div>
+        </div>
+      </div>
+      <div class="spec-item">
+        <span class="spec-num">03</span>
+        <div class="spec-content">
+          <h3>Open electronics — Arduino &amp; Raspberry Pi</h3>
+          <p>Widely available, community-supported boards at the core. Fully programmable with Python, no proprietary controllers, no vendor lock-in. Swap, upgrade, or extend at any time.</p>
+          <div class="spec-tags">
+            <span class="tag">Arduino</span>
+            <span class="tag">Raspberry Pi</span>
+            <span class="tag">Python API</span>
+          </div>
+        </div>
+      </div>
+      <div class="spec-item">
+        <span class="spec-num">04</span>
+        <div class="spec-content">
+          <h3>Field-repairable by design</h3>
+          <p>Every broken component can be reprinted or recut on-site. With a total parts cost under $150, repair is faster and cheaper than any service contract — anywhere in the world.</p>
+          <div class="spec-tags">
+            <span class="tag">OSHWA certified</span>
+            <span class="tag">CERN-OHL-S</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MISSION -->
+<section id="mission">
+  <div class="section-label">Mission &amp; values</div>
+  <h2 class="section-title">Science without barriers.</h2>
+  <p class="section-body">
+    Cutting-edge research should not be the exclusive domain of well-funded institutions. We build tools that are accessible by design — from material cost to documentation to repairability.
+  </p>
+
+  <div class="mission-grid">
+    <div class="mission-card">
+      <h3>Accessible</h3>
+      <p>High-performance instruments designed for laboratories with limited budgets — from secondary schools to field research stations in remote or low-resource regions around the world.</p>
+      <p class="mission-stat">Target unit cost &lt; $150 USD</p>
+    </div>
+    <div class="mission-card">
+      <h3>Sustainable</h3>
+      <p>Manufacture locally, repair indefinitely. Digital fabrication eliminates complex supply chains — reducing cost, carbon footprint, and dependency on international logistics.</p>
+      <p class="mission-stat">100% locally fabricable parts</p>
+    </div>
+    <div class="mission-card">
+      <h3>Open</h3>
+      <p>Every design file, firmware source, and protocol is published openly. Science advances faster when knowledge is shared without restriction or license barriers.</p>
+      <p class="mission-stat">CERN-OHL-S licensed hardware</p>
+    </div>
+  </div>
+</section>
+
+<!-- WAITLIST -->
+<section id="waitlist">
+  <div class="section-label">Early access</div>
+  <h2 class="section-title">Be first in the lab.</h2>
+  <p class="section-body">
+    We're preparing our first production run and working with partner institutions for pilot deployments. Leave your email to receive updates and early access pricing.
+  </p>
+
+  <div data-fs-success class="form-success" id="formSuccess" role="alert">
+    ✓ &nbsp; You're on the list — we'll be in touch soon.
+  </div>
+  <div data-fs-error class="form-error"></div>
+
+  <form class="waitlist-form" id="waitlistForm" novalidate>
+    <input
+      type="email" class="waitlist-input" id="emailInput"
+      name="email" data-fs-field
+      placeholder="your@institution.edu"
+      required autocomplete="email" aria-label="Email address"
+    />
+    <span data-fs-error="email"></span>
+    <button type="submit" class="waitlist-btn" data-fs-submit-btn>Join waitlist</button>
+  </form>
+  <p class="waitlist-note">No spam. Unsubscribe any time. Early partners receive priority pricing.</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="footer-logo">Caracara Tech</a>
+  <p class="footer-meta">&copy; 2026 Caracara Tech. All rights reserved.</p>
+  <nav class="footer-links" aria-label="Footer links">
+    <a href="https://github.com/caracara-tech" target="_blank" rel="noopener">GitHub</a>
+    <a href="mailto:ppadilla1703@gmail.com">Contact</a>
+  </nav>
+</footer>
+
+<script>
+  window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
+  formspree('initForm', { formElement: '#waitlistForm', formId: 'mpqnzavq' });
+</script>
+<script src="https://unpkg.com/@formspree/ajax@1" defer></script>
+
+<script>
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => {
+          a.style.color = '';
+          if (a.getAttribute('href') === '#' + entry.target.id) a.style.color = 'var(--accent)';
+        });
+      }
+    });
+  }, { threshold: 0.4 });
+  sections.forEach(s => observer.observe(s));
+
+  const faders = document.querySelectorAll('.spec-item, .mission-card');
+  const fadeObs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        fadeObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  faders.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(14px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    fadeObs.observe(el);
+  });
+</script>
+</body>
+</html>
