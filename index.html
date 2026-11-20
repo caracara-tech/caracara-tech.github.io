@@ -12,17 +12,18 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --ink:          #100e1a;
-      --ink-muted:    #4e4a60;
-      --ink-faint:    #8e8aa8;
-      --surface:      #f4f3f8;
-      --surface-alt:  #eceaf4;
+      --ink:          #0d1620;
+      --ink-muted:    #44566a;
+      --ink-faint:    #8497a8;
+      --surface:      #f2f7fa;
+      --surface-alt:  #e6f0f5;
       --white:        #ffffff;
-      --accent:       #5c3fb5;
-      --accent-mid:   #7c5cce;
-      --accent-light: #e0d9f7;
-      --accent-dark:  #2e1d6e;
-      --rule:         #d4d0e4;
+      --accent:       #1f6c91;
+      --accent-mid:   #2b8ab6;
+      --accent-light: #d6eaf4;
+      --accent-dark:  #0f3d57;
+      --brand:        #2B8AB6;
+      --rule:         #cfdde6;
       --orange:       #e07828;
       --mono:  'DM Mono', monospace;
       --serif: 'DM Serif Display', serif;
@@ -44,7 +45,7 @@
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 2.5rem; height: 64px;
-      background: rgba(244,243,248,0.88);
+      background: rgba(242,247,250,0.88);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--rule);
     }
@@ -165,19 +166,19 @@
       font-family: var(--mono); font-size: 0.65rem; font-weight: 400;
       letter-spacing: 0.14em; text-transform: uppercase;
       color: rgba(255,255,255,0.9);
-      background: rgba(46, 29, 110, 0.72);
+      background: rgba(15,61,87, 0.72);
       backdrop-filter: blur(8px);
       padding: 0.35rem 0.75rem; border-radius: 3px;
       border: 1px solid rgba(255,255,255,0.18);
     }
 
     /* TICKER */
-    .ticker-wrap { background: var(--accent); overflow: hidden; white-space: nowrap; padding: 0.6rem 0; }
+    .ticker-wrap { background: var(--brand); overflow: hidden; white-space: nowrap; padding: 0.6rem 0; }
     .ticker-track { display: inline-block; animation: ticker 34s linear infinite; }
     .ticker-track span {
       font-family: var(--mono); font-size: 0.72rem; font-weight: 300;
       letter-spacing: 0.12em; text-transform: uppercase;
-      color: rgba(255,255,255,0.72); padding: 0 2.5rem;
+      color: rgba(255,255,255,0.95); padding: 0 2.5rem;
     }
     .ticker-track span::after { content: '·'; padding-left: 2.5rem; color: rgba(255,255,255,0.32); }
     @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
